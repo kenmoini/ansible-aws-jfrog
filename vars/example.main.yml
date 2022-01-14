@@ -1,0 +1,27 @@
+---
+# Basic Needed vars
+
+aws_region: us-east-2
+jfrog_hostname: jfrog
+jfrog_keypair_name: jfrog_keypair
+jfrog_ec2_instance_type: m5.xlarge
+jfrog_ec2_keypair: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+jfrog_server_pkgs:
+  - curl
+  - git
+  - policycoreutils-python-utils
+  - python3-policycoreutils
+  - openssh-server
+  - openssl
+  - postfix
+  - tzdata
+  - podman
+  - cockpit
+  - cockpit-podman
+  - nano
+  - wget
+  - firewalld
+  - python3-pip
+
+jfrog_server_fqdn: "{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}"
