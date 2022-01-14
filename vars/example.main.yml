@@ -5,7 +5,9 @@ aws_region: us-east-2
 jfrog_hostname: jfrog
 jfrog_keypair_name: jfrog_keypair
 jfrog_ec2_instance_type: m5.xlarge
-jfrog_ec2_keypair: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+jfrog_ec2_keypair:
+  public_key_path: "~/.ssh/id_rsa.pub"
+  private_key_path: "~/.ssh/id_rsa"
 
 jfrog_server_pkgs:
   - curl

@@ -66,7 +66,7 @@
     amazon.aws.ec2_key:
       region: "{{ aws_region }}"
       name: "{{ jfrog_keypair_name }}"
-      key_material: "{{ jfrog_ec2_keypair }}"
+      key_material: "{{ lookup('file', jfrog_ec2_keypair.public_key_path) }}"
 
   - name: Find RHEL AMI
     amazon.aws.ec2_ami_facts:
@@ -133,6 +133,7 @@
       ansible_connection: ssh
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
       ansible_python_interpreter: "/usr/libexec/platform-python"
+      ansible_ssh_private_key_file: "{{ jfrog_ec2_keypair.private_key_path }}"
       aws_guid_public_zone_name: "{{ aws_guid_public_zone_name }}"
       rhoe_email_owner: "{{ rhoe_email_owner }}"
 
