@@ -1,0 +1,28 @@
+[Unit]
+Description=HAProxy Container (haproxy-container)
+After=network.target
+
+[Service]
+Type=forking
+TimeoutStartSec=5m
+ExecStartPre=-/usr/bin/podman rm -f -i haproxy-container
+
+ExecStart=-/usr/bin/podman run -d --name haproxy-container \
+  --net host \
+  -p 80/tcp \
+  -p 443/tcp \
+  -v /opt/haproxy:/usr/local/etc/haproxy:ro \
+  -v /opt/certs:/usr/local/etc/certs:ro \
+  {{ haproxy_container_image }}
+  
+ExecReload=-/usr/bin/podman stop haproxy-container
+ExecReload=-/usr/bin/podman rm -f -i haproxy-container
+
+ExecStop=-/usr/bin/podman stop haproxy-container
+ExecStop=-/usr/bin/podman rm -f -i haproxy-container
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,48 @@
+global
+  log stdout format raw local0
+  daemon
+  ssl-default-bind-ciphers kEECDH+aRSA+AES:kRSA+AES:+AES256:RC4-SHA:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL
+
+#resolvers docker_resolver
+#  nameserver dns {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}:53
+
+defaults
+  log     global
+  mode    http
+  option  httplog
+  option  dontlognull
+  timeout connect 36000s
+  timeout client 36000s
+  timeout server 36000s
+
+frontend http
+  bind *:80
+  mode http
+	
+	# if this is an ACME request to proof the domain ownder, then redirect to nginx-certbot server
+  acl is_well_known path_beg -i /.well-known/
+	
+	# else redirect the traffic to https
+  redirect scheme https code 301 if !is_well_known !{ ssl_fc }
+  use_backend letsencrypt if is_well_known
+
+frontend https
+  bind *:443 ssl crt-list /usr/local/etc/haproxy/crt-list.cfg
+  http-response set-header Strict-Transport-Security "max-age=16000000; includeSubDomains; preload;"
+
+  acl host_jfrogui hdr(host) -i {{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}
+  
+  use_backend jfrogui if host_jfrogui
+
+  default_backend mybackend
+
+backend letsencrypt
+  server letsencrypt 127.0.0.1:8080 check init-addr none
+
+backend mybackend
+  server backend1 172.17.0.1:5000
+  http-request add-header X-Forwarded-Proto https if { ssl_fc }
+
+backend jfrogui
+  server jfrogui1 127.0.0.1:8082
+  http-request add-header X-Forwarded-Proto https if { ssl_fc }

@@ -1,11 +1,16 @@
 ---
 - name: Wait for SSH to come up
   wait_for_connection:
-    delay: 10
+    delay: 3
     timeout: 360
 
+- name: Install EPEL
+  dnf:
+    name: "{{ epel_link }}"
+    disable_gpg_check: yes
+
 - name: Update system packages
-  yum:
+  dnf:
     name: "*"
     state: latest
     update_cache: yes
@@ -44,6 +49,87 @@
 - name: Connect to new instance and set hostname
   hostname:
     name: "{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}"
+
+- name: Create JFrog group
+  ansible.builtin.group:
+    name: jfrog
+    state: present
+    gid: 1234
+
+- name: Create JFrog user
+  ansible.builtin.user:
+    name: jfrog
+    state: present
+    groups: jfrog
+    uid: 1234
+    shell: /bin/bash
+    home: /home/jfrog
+    create_home: yes
+
+- name: Create HAProxy group
+  ansible.builtin.group:
+    name: haproxy
+    state: present
+    gid: 1235
+
+- name: Create HAProxy user
+  ansible.builtin.user:
+    name: haproxy
+    state: present
+    groups: haproxy
+    uid: 1235
+    shell: /bin/bash
+    home: /opt/haproxy
+    create_home: yes
+
+- name: Create persistent data directory if needed for JFrog
+  file:
+    path: "{{ loop_dir }}"
+    state: directory
+    mode: 0775
+    owner: 1234
+    group: 1234
+  loop:
+    - /opt/jfrog/artifactory/var
+    - /var/opt/jfrog/artifactory
+  loop_control:
+    loop_var: loop_dir
+
+- name: Create persistent data directory if needed for HAProxy
+  file:
+    path: "{{ loop_dir }}"
+    state: directory
+    mode: 0775
+    owner: 1235
+    group: 1235
+  loop:
+    - /opt/haproxy
+    - /opt/certs
+  loop_control:
+    loop_var: loop_dir
+
+- name: Create persistent data directory if needed for Certbot
+  file:
+    path: "{{ loop_dir }}"
+    state: directory
+    mode: 0775
+    owner: 1235
+    group: 1235
+  loop:
+    - /opt/letsencrypt
+    - /opt/webroot
+  loop_control:
+    loop_var: loop_dir
+
+- name: Disable SELinux because I am a lazy bastard
+  selinux:
+    state: disabled
+
+- name: Set Sysctl for ports and stuff
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: '80'
+    state: present
 
 - name: Set /etc/hosts file
   copy:
@@ -85,3 +171,89 @@
     - 5003
     - 5004
     - 5005
+    - 8040
+    - 8046
+    - 8081
+    - 8082
+    - 8091
+
+- name: Pull JFrog Image
+  containers.podman.podman_image:
+    name: "{{ jfrog_container_image }}"
+
+- name: Pull HAProxy Container
+  containers.podman.podman_image:
+    name: "{{ haproxy_container_image }}"
+
+- name: Template JFrog Service file
+  template:
+    src: templates/jfrog-container.service.j2
+    dest: /etc/systemd/system/jfrog-container.service
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template HAProxy Service file
+  template:
+    src: templates/haproxy-container.service.j2
+    dest: /etc/systemd/system/haproxy-container.service
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template HAProxy configuration file
+  template:
+    src: templates/haproxy.cfg.j2
+    dest: /opt/haproxy/haproxy.cfg
+    owner: 1235
+    group: 1235
+    mode: 0775
+
+- name: Template HAProxy CRT file
+  template:
+    src: templates/crt-list.cfg.j2
+    dest: /opt/haproxy/crt-list.cfg
+    owner: 1235
+    group: 1235
+    mode: 0775
+
+- name: Seed default certificate
+  shell:
+    cmd: |
+      openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -keyout /opt/certs/default.key -out /opt/certs/default.crt -subj "/C=US/ST=North Carolina/L=Raleigh/O=InfoSec/CN={{ jfrog_server_fqdn }}"
+      cat /opt/certs/default.key /opt/certs/default.crt > /opt/certs/default.pem
+      rm /opt/certs/default.key /opt/certs/default.crt
+    creates: /opt/certs/default.pem
+
+- name: Request cerbot certificate
+  when: enable_certbot|bool
+  shell:
+    cmd: |
+      certbot certonly --standalone -n -d {{ jfrog_server_fqdn }} --email {{ certbot_email }} --agree-tos
+      cat /etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem /etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem > /opt/certs/{{ jfrog_server_fqdn }}.pem
+      chown 1235:1235 /opt/certs/{{ jfrog_server_fqdn }}.pem
+    creates: "/etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem"
+
+- name: Reload systemd units
+  service:
+    daemon_reload: yes
+
+- name: Start JFrog Service
+  service:
+    name: jfrog-container
+    state: started
+    enabled: yes
+
+- name: Start HAProxy Service
+  service:
+    name: haproxy-container
+    state: started
+    enabled: yes
+
+- name: JFrog provisioning complete!
+  debug:
+    msg:
+    - =======================================================
+    - JFrog provisioning complete!"
+    - =======================================================
+    - "JFrog Endpoint: https://{{ jfrog_server_fqdn }}"

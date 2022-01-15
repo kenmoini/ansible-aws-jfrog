@@ -1,0 +1,28 @@
+[Unit]
+Description=JFrog Container (jfrog-cr)
+After=network.target
+
+[Service]
+Type=forking
+TimeoutStartSec=5m
+ExecStartPre=-/usr/bin/podman rm -f -i jfrog-cr
+
+ExecStart=-/usr/bin/podman run -d --name jfrog-cr \
+  --net host \
+  -p 8081/tcp \
+  --user 1234:1234 \
+  -v /var/opt/jfrog/artifactory:/var/opt/jfrog/artifactory \
+  -v /opt/jfrog/artifactory/var:/opt/jfrog/artifactory/var \
+  {{ jfrog_container_image }}
+  
+ExecReload=-/usr/bin/podman stop jfrog-cr
+ExecReload=-/usr/bin/podman rm -f -i jfrog-cr
+
+ExecStop=-/usr/bin/podman stop jfrog-cr
+ExecStop=-/usr/bin/podman rm -f -i jfrog-cr
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
