@@ -256,4 +256,6 @@
     - =======================================================
     - JFrog provisioning complete!"
     - =======================================================
-    - "JFrog Endpoint: https://{{ jfrog_server_fqdn }}"
+    - "JFrog Endpoint:     https://{{ jfrog_server_fqdn }}"
+    - "Default Username:   admin"
+    - "Default Password:   password"

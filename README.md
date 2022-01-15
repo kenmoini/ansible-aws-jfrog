@@ -14,3 +14,8 @@ This set of Ansible Automation content will create an EC2 VM in AWS, running RHE
 ```bash
 ansible-playbook aws-bootstrap.yml
 ```
+
+## Post-deployment
+
+- Log in with default credentials, walk through the OOTB Wizard to set the base URL and new credentials
+- Create a repo maybe?  IDK much about JFrog, work in progress right here
