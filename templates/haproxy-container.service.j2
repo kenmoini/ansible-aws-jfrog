@@ -9,8 +9,6 @@ ExecStartPre=-/usr/bin/podman rm -f -i haproxy-container
 
 ExecStart=-/usr/bin/podman run -d --name haproxy-container \
   --net host \
-  -p 80/tcp \
-  -p 443/tcp \
   -v /opt/haproxy:/usr/local/etc/haproxy:ro \
   -v /opt/certs:/usr/local/etc/certs:ro \
   {{ haproxy_container_image }}

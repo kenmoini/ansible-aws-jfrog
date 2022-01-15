@@ -9,7 +9,6 @@ ExecStartPre=-/usr/bin/podman rm -f -i jfrog-cr
 
 ExecStart=-/usr/bin/podman run -d --name jfrog-cr \
   --net host \
-  -p 8081/tcp \
   --user 1234:1234 \
   -v /var/opt/jfrog/artifactory:/var/opt/jfrog/artifactory \
   -v /opt/jfrog/artifactory/var:/opt/jfrog/artifactory/var \
