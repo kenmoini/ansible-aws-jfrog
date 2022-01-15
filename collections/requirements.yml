@@ -3,3 +3,4 @@ collections:
   - name: community.aws
   - name: amazon.aws
   - name: ansible.posix
+  - name: containers.podman
