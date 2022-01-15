@@ -1,4 +1,4 @@
-/usr/local/etc/certs/default.pem
 {% if enable_certbot|bool %}
-/usr/local/etc/certs/{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}.pem [alpn h2 ssl-min-ver TLSv1.2] {{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}
+/usr/local/etc/certs/{{ jfrog_hostname }}.{{ base_domain }}.pem [alpn h2 ssl-min-ver TLSv1.2] {{ jfrog_hostname }}.{{ base_domain }}
 {% endif %}
+/usr/local/etc/certs/default.pem
