@@ -28,12 +28,12 @@ jfrog_server_pkgs:
   - python3-pip
   - certbot
 
-jfrog_server_fqdn: "{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}"
+jfrog_server_fqdn: "{{ jfrog_hostname }}.{{ base_domain }}"
 jfrog_container_image: releases-docker.jfrog.io/jfrog/artifactory-jcr:latest
 
 haproxy_container_image: haproxy:latest
 
 enable_certbot: true
-certbot_email: "{{ rhoe_email_owner }}"
+certbot_email: "{{ env_email_owner }}"
 
 epel_link: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
