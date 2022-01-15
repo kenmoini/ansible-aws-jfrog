@@ -27,6 +27,7 @@
   set_fact:
     aws_guid_public_zone_id: "{{ r53_item.Id | replace('/hostedzone/', '') }}"
     aws_guid_public_zone_name: "{{ r53_item.Name[:-1] }}"
+    base_domain: "{{ r53_item.Name[:-1] }}"
   loop: "{{ hosted_zones.HostedZones }}"
   loop_control:
     loop_var: r53_item
