@@ -13,6 +13,8 @@
   - name: Scope RHOE AWS Environment
     include_role:
       name: "roles/scope-rhoe-aws"
+    tags:
+      - rhoe-aws
 
   #======================================================================== AWS INFRASTRUCTURE - NETWORK
 
@@ -35,6 +37,8 @@
             - 5004
             - 5005
             - 8080
+            - 8081
+            - 8082
           cidr_ip: 0.0.0.0/0
         - proto: udp
           ports:
@@ -59,6 +63,9 @@
         owner: "{{ rhoe_email_owner }}"
         email: "{{ rhoe_email_owner }}"
         deployer: grain-tower
+    tags:
+      - aws_infra
+      - aws_sg
 
   #======================================================================== AWS INFRASTRUCTURE - EC2
 
@@ -67,6 +74,9 @@
       region: "{{ aws_region }}"
       name: "{{ jfrog_keypair_name }}"
       key_material: "{{ lookup('file', jfrog_ec2_keypair.public_key_path) }}"
+    tags:
+      - aws_infra
+      - aws_ec2_key
 
   - name: Find RHEL AMI
     amazon.aws.ec2_ami_facts:
@@ -75,6 +85,9 @@
       filters:
         name: "RHEL*8.5*x86_64*"
     register: rhel_ami
+    tags:
+      - aws_infra
+      - aws_query
 
   - name: Create EC2 Instance for JFrog Server
     amazon.aws.ec2:
@@ -97,6 +110,9 @@
         base_domain: "{{ aws_guid_public_zone_name }}"
         deployer: grain-tower
     register: aws_ec2_instance
+    tags:
+      - aws_infra
+      - aws_ec2
 
   - name: Set fact for Route53 entries
     set_fact:
@@ -109,6 +125,9 @@
           type: A
           ttl: 300
           value: "{{ aws_ec2_instance.tagged_instances[0].public_ip }}"
+    tags:
+      - aws_infra
+      - aws_query
     
   - name: Create Route53 A Record Entries for JFrog
     community.aws.route53:
@@ -123,6 +142,9 @@
     loop_control:
       loop_var: record_item
     when: (record_item.type == "A")
+    tags:
+      - aws_infra
+      - aws_route53
 
   - name: Add the new JFrog Host to a new inventory
     add_host:
@@ -136,6 +158,9 @@
       ansible_ssh_private_key_file: "{{ jfrog_ec2_keypair.private_key_path }}"
       aws_guid_public_zone_name: "{{ aws_guid_public_zone_name }}"
       rhoe_email_owner: "{{ rhoe_email_owner }}"
+    tags:
+      - aws_infra
+      - aws_add_host
 
 - name: Configure JFrog Server
   hosts: jfrog
@@ -148,3 +173,5 @@
       
     - name: Kick off JFrog Deployment
       include_tasks: tasks/deploy-jfrog.yml
+      tags:
+        - deploy_jfrog_all
