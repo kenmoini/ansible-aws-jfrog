@@ -48,7 +48,7 @@
 
 - name: Connect to new instance and set hostname
   hostname:
-    name: "{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}"
+    name: "{{ jfrog_hostname }}.{{ base_domain }}"
 
 - name: Create JFrog group
   ansible.builtin.group:
@@ -136,7 +136,7 @@
     dest: "/etc/hosts"
     content: |
       127.0.0.1 localhost localdomain
-      {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }} {{ jfrog_hostname }}.{{ aws_guid_public_zone_name }} {{ aws_guid_public_zone_name }}
+      {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }} {{ jfrog_hostname }}.{{ base_domain }} {{ base_domain }}
 
 - name: Start firewalld
   service:
@@ -181,7 +181,7 @@
   containers.podman.podman_image:
     name: "{{ jfrog_container_image }}"
 
-- name: Pull HAProxy Container
+- name: Pull HAProxy Image
   containers.podman.podman_image:
     name: "{{ haproxy_container_image }}"
 
@@ -230,13 +230,19 @@
   shell:
     cmd: |
       certbot certonly --standalone -n -d {{ jfrog_server_fqdn }} --email {{ certbot_email }} --agree-tos
-      cat /etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem /etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem > /opt/certs/{{ jfrog_server_fqdn }}.pem
+      cat /etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem /etc/letsencrypt/live/{{ jfrog_server_fqdn }}/fullchain.pem > /opt/certs/{{ jfrog_server_fqdn }}.pem
       chown 1235:1235 /opt/certs/{{ jfrog_server_fqdn }}.pem
     creates: "/etc/letsencrypt/live/{{ jfrog_server_fqdn }}/privkey.pem"
 
 - name: Reload systemd units
   service:
     daemon_reload: yes
+
+- name: Start Cockpit Service
+  service:
+    name: cockpit
+    state: started
+    enabled: yes
 
 - name: Start JFrog Service
   service:
