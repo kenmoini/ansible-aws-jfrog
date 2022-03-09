@@ -64,7 +64,7 @@
       - aws_ec2_key
 
   - name: Find RHEL AMI
-    amazon.aws.ec2_ami_facts:
+    amazon.aws.ec2_ami_info:
       region: "{{ aws_region }}"
       owners: 309956199498
       filters:
