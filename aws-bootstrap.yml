@@ -75,19 +75,18 @@
       - aws_query
 
   - name: Create EC2 Instance for JFrog Server
-    amazon.aws.ec2:
+    amazon.aws.ec2_instance:
+      name: "jfrog-{{ rhoe_email_owner }}"
       region: "{{ aws_region }}"
       key_name: "{{ jfrog_keypair_name }}"
       instance_type: "{{ jfrog_ec2_instance_type }}"
-      image: "{{ (rhel_ami.images | selectattr('name', 'defined') | sort(attribute='creation_date') | last).image_id }}"
+      image_id: "{{ (rhel_ami.images | selectattr('name', 'defined') | sort(attribute='creation_date') | last).image_id }}"
       wait: yes
       vpc_subnet_id: "{{ aws_subnet_id }}"
-      assign_public_ip: yes
-      group: jfrog-sg
-      exact_count: 1
-      count_tag:
-        Name: jfrog
-      instance_tags:
+      network:
+        assign_public_ip: true
+      security_group: jfrog-sg
+      tags:
         guid: "{{ rhoe_guid }}"
         owner: "{{ rhoe_email_owner }}"
         email: "{{ rhoe_email_owner }}"

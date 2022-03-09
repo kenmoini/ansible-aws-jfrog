@@ -15,7 +15,7 @@
       name: "roles/scope-rhoe-aws"
 
   - name: Query EC2 Instance for JFrog Server
-    community.aws.ec2_instance_info:
+    amazon.aws.ec2_instance_info:
       region: "{{ aws_region }}"
       filters:
         "tag:guid": "{{ rhoe_guid }}"
@@ -58,7 +58,7 @@
 
   - name: Delete EC2 instance
     when: aws_ec2_instance.instances|length > 0
-    amazon.aws.ec2:
+    amazon.aws.ec2_instance:
       region: "{{ aws_region }}"
       state: absent
       wait: yes
