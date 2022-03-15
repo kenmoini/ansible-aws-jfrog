@@ -1,5 +1,5 @@
-# Still iun development 
 #!/bin/bash
+# Still in development 
 
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json

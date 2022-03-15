@@ -1,4 +1,5 @@
 #!/bin/bash
+# Still in development 
 set -x
 
 # Variables
