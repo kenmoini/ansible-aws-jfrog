@@ -87,8 +87,8 @@
     path: "{{ loop_dir }}"
     state: directory
     mode: 0775
-    owner: 1234
-    group: 1234
+    owner: "1234"
+    group: "1234"
   loop:
     - /opt/jfrog/artifactory/var
     - /var/opt/jfrog/artifactory
@@ -100,8 +100,8 @@
     path: "{{ loop_dir }}"
     state: directory
     mode: 0775
-    owner: 1235
-    group: 1235
+    owner: "1235"
+    group: "1235"
   loop:
     - /opt/haproxy
     - /opt/certs
@@ -113,8 +113,8 @@
     path: "{{ loop_dir }}"
     state: directory
     mode: 0775
-    owner: 1235
-    group: 1235
+    owner: "1235"
+    group: "1235"
   loop:
     - /opt/letsencrypt
     - /opt/webroot
@@ -217,6 +217,14 @@
     group: 1235
     mode: 0775
 
+- name: Template Nginx configuration file
+  template:
+    src: templates/nginx.conf.j2
+    dest: /opt/nginx/nginx.conf
+    owner: 991
+    group: 987
+    mode: 0775
+
 - name: Seed default certificate
   shell:
     cmd: |
@@ -255,6 +263,12 @@
     name: haproxy-container
     state: started
     enabled: yes
+
+#- name: Start Nginx Service
+#  service:
+#    name: nginx
+#    state: started
+#    enabled: yes
 
 - name: JFrog provisioning complete!
   debug:
