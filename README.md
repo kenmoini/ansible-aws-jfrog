@@ -45,8 +45,11 @@ ansible-playbook -i yourInventoryFile aws-bootstrap.yml --skip-tags=rhoe_aws,aws
 
 ## Post-deployment
 
+* [Script to configure disconnected environments](disconnected-scripts)  
+
 There are some manual steps post-deployment - Artifactory Pro allows REST API access.
 
 - Log in with default credentials, walk through the OOTB Wizard to set the base URL and new credentials
 - Create a Local Repository - Docker type, Repository Key of whatever you're naming the repo (like `library`, `olm-mirror`, `ocp-release-mirror`, etc), with a Docker Tag Retention of 4096.
 - Under ***Identity and Access > Users*** create a user to pull/push from the created Repositories
+
