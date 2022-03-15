@@ -1,6 +1,7 @@
 ---
 - name: Deploy JFrog on Red Hat Open Environments, AWS
   hosts: localhost
+  connection: local
   gather_facts: false
 
   tasks:
@@ -76,7 +77,7 @@
 
   - name: Create EC2 Instance for JFrog Server
     amazon.aws.ec2_instance:
-      name: "jfrog-{{ rhoe_email_owner }}"
+      name: "{{ jfrog_hostname }}"
       region: "{{ aws_region }}"
       key_name: "{{ jfrog_keypair_name }}"
       instance_type: "{{ jfrog_ec2_instance_type }}"
@@ -93,7 +94,26 @@
         Name: "{{ jfrog_hostname }}"
         base_domain: "{{ aws_guid_public_zone_name }}"
         deployer: grain-tower
+    tags:
+      - aws_infra
+      - aws_ec2
+    #register: aws_ec2_instance
+
+  - name: Query EC2 Instance for JFrog Server
+    amazon.aws.ec2_instance_info:
+      region: "{{ aws_region }}"
+      filters:
+        "tag:guid": "{{ rhoe_guid }}"
+        "tag:owner": "{{ rhoe_email_owner }}"
+        "tag:email": "{{ rhoe_email_owner }}"
+        "tag:Name": "{{ jfrog_hostname }}"
+        "tag:base_domain": "{{ aws_guid_public_zone_name }}"
+        "tag:deployer": grain-tower
+        instance-state-name: ["running", "stopped"]
     register: aws_ec2_instance
+    until: aws_ec2_instance.instances[0].public_ip_address is defined
+    retries: 120
+    delay: 10
     tags:
       - aws_infra
       - aws_ec2

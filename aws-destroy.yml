@@ -1,6 +1,7 @@
 ---
 - name: Destroy JFrog on Red Hat Open Environments, AWS
   hosts: localhost
+  connection: local
   gather_facts: false
   vars:
     r53_records: []
@@ -62,6 +63,7 @@
       region: "{{ aws_region }}"
       state: absent
       wait: yes
+      instance_type: "{{ jfrog_ec2_instance_type }}"
       instance_ids: '{{ aws_ec2_instance.instances[0].instance_id }}'
 
   - name: Delete JFrog Security Group
