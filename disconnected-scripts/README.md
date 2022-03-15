@@ -27,9 +27,8 @@ sudo dnf install jq -y
 sudo dnf install libvirt -y
 ```
 
-## TO-DO Generic Registry Creation Script
-> Ad steps to use generic registry
-
+## Configure jfrog Repo for Script
+[Jfrog pre-configuration](jfrog-preflight.md)
 
 # To mirror an OpenShift release to Quay
 * replace password with generated password for output

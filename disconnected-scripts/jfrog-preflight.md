@@ -1,4 +1,4 @@
-# Jfrog preconfiguration 
+# Jfrog pre-configuration 
 
 ## Create Docker repo endpoint 
 `Repositories->Repositories`  
