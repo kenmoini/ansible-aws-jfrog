@@ -94,6 +94,11 @@
         Name: "{{ jfrog_hostname }}"
         base_domain: "{{ aws_guid_public_zone_name }}"
         deployer: grain-tower
+      volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_size: 1024
+          delete_on_termination: true
     tags:
       - aws_infra
       - aws_ec2
