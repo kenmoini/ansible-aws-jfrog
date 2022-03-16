@@ -29,7 +29,8 @@ frontend http
 frontend https
   bind *:443 ssl crt-list /usr/local/etc/haproxy/crt-list.cfg
   http-response set-header Strict-Transport-Security "max-age=16000000; includeSubDomains; preload;"
-
+  option forwardfor
+  option forwardfor header X-Real-IP
   acl host_jfrogui hdr(host) -i {{ jfrog_hostname }}.{{ base_domain }}
   
   use_backend jfrogui if host_jfrogui

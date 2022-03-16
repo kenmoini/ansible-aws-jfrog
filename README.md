@@ -6,7 +6,7 @@ This set of Ansible Automation content will create an EC2 VM in AWS, running RHE
 
 - Install Ansible
 - Install needed pip modules: `pip3 install -r ./requirements.txt`
-- Install needed Ansible Collections: `ansible-galaxy collection install -r ./collections/requirements.yml`
+- Install needed Ansible Collections: `ansible-galaxy collection install -f -r ./collections/requirements.yml`
 - Copy & Modify Variables: `cp vars/example.main.yml vars/main.yml`
 - Create ` ~/.ssh/id_rsa.pub` using the `ssh-keygen`
 
