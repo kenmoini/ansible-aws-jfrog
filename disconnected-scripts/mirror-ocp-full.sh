@@ -5,9 +5,8 @@ set -x
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json
 export LOCAL_SECRET_JSON=~/merged-pull-secret.json
-export PORT=443
 export LOCAL_REGISTRY=jfrog.example.com
-export LOCAL_REPOSITORY=artifactory/ocp4
+export LOCAL_REPOSITORY=ocp4/ocp4
 export OCP_REGISTRY=quay.io/openshift-release-dev/ocp-release
 export EMAIL="admin@changeme.com"
 export PASSWORD="CHANGEME"
@@ -54,8 +53,8 @@ function ocp_mirror_release() {
     fi 
 	oc adm -a ${LOCAL_SECRET_JSON} release mirror \
 		--from=${OCP_REGISTRY}:${OCP_RELEASE} \
-		--to=${LOCAL_REGISTRY}:${PORT}/${LOCAL_REPOSITORY} \
-		--to-release-image=${LOCAL_REGISTRY}:${PORT}/${LOCAL_REPOSITORY}:${OCP_RELEASE} --insecure=${USE_INSECURE}
+		--to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
+		--to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE} --insecure=${USE_INSECURE}
 }
 
 function download_oc_latest_client() {

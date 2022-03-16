@@ -4,9 +4,8 @@
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json
 export LOCAL_SECRET_JSON=~/merged-pull-secret.json
-export PORT=443
 export LOCAL_REGISTRY=jfrog.example.com
-export LOCAL_REPOSITORY=artifactory/ocp4
+export LOCAL_REPOSITORY=ocp4/ocp4
 export OCP_REGISTRY=quay.io/openshift-release-dev/ocp-release
 export EMAIL="admin@changeme.com"
 export PASSWORD="CHANGEME"
