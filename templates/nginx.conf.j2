@@ -34,7 +34,7 @@ http {
     server {
         listen       80 default_server;
         listen       [::]:80 default_server;
-        server_name  {{ jfrog_hostname }}.{{ aws_guid_public_zone_name }};
+        server_name  {{ jfrog_hostname }}.{{ base_domain }};
         root         /usr/share/nginx/html;
 
         # Load configuration files for the default server block.
@@ -58,8 +58,8 @@ http {
 
     ## add ssl entries when https has been set in config
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
-    ssl_certificate      /etc/letsencrypt/live/{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}/fullchain.pem;
-    ssl_certificate_key  /etc/letsencrypt/live/{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}/privkey.pem;
+    ssl_certificate      /etc/letsencrypt/live/{{ jfrog_hostname }}.{{ base_domain }}/fullchain.pem;
+    ssl_certificate_key  /etc/letsencrypt/live/{{ jfrog_hostname }}.{{ base_domain }}/privkey.pem;
     ssl_session_cache shared:SSL:1m;
     ssl_prefer_server_ciphers   on;
 
@@ -67,14 +67,14 @@ http {
     server {
         listen 443 ssl;
         
-        server_name {{ jfrog_hostname }}.{{ aws_guid_public_zone_name }};
+        server_name {{ jfrog_hostname }}.{{ base_domain }};
         if ($http_x_forwarded_proto = '') {
             set $http_x_forwarded_proto  $scheme;
         }
 
         ## Application specific logs
-        access_log /var/log/nginx/{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}-access.log;
-        error_log /var/log/nginx/{{ jfrog_hostname }}.{{ aws_guid_public_zone_name }}-error.log;
+        access_log /var/log/nginx/{{ jfrog_hostname }}.{{ base_domain }}-access.log;
+        error_log /var/log/nginx/{{ jfrog_hostname }}.{{ base_domain }}-error.log;
 
         rewrite ^/$ /ui/ redirect;
         rewrite ^/ui$ /ui/ redirect;
