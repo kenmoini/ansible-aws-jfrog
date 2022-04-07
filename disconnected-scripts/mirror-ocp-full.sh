@@ -111,16 +111,16 @@ function download_rhcos() {
 		sudo mkdir -p ${OCP_RELEASE_DOWN_PATH}
 		echo "--> Downloading RHCOS resources: RHCOS QEMU Image"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_QEMU_URI | xargs basename) ${RHCOS_QEMU_URI}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_QEMU_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_QEMU_URI | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_QEMU_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_QEMU_URI | xargs basename)"
 		echo "--> Downloading RHCOS resources: RHCOS Openstack Image"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_OPENSTACK_URI | xargs basename) ${RHCOS_OPENSTACK_URI}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_OPENSTACK_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_OPENSTACK_URI | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_OPENSTACK_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_OPENSTACK_URI | xargs basename)"
 		echo "--> Downloading RHCOS resources: RHCOS ISO"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ISO_URI | xargs basename) ${RHCOS_ISO_URI}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ISO_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ISO_URI | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ISO_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ISO_URI | xargs basename)"
 		echo "--> Downloading RHCOS resources: RHCOS RootFS"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ROOT_FS | xargs basename) ${RHCOS_ROOT_FS}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ROOT_FS | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ROOT_FS | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ROOT_FS | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ROOT_FS | xargs basename)"
 	else
 		echo "The folder already exist, so delete it if you want to re-download the RHCOS resources"
 	fi
