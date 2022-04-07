@@ -30,7 +30,6 @@ EOF
 
         cat ${PULL_SECRET_JSON} |jq ".auths += {`cat ~/reg-secret.txt`}"|tr -d '[:space:]' > ${LOCAL_SECRET_JSON}
     else
-		curl -X POST -vu admin:beae7F%pEBp$ https://${LOCAL_REGISTRY}/artifactory/ui/jcr/eula/accept
         echo "${PULL_SECRET_JSON} not found please add"
         echo "Plese go to https://console.redhat.com/openshift/install/"
         exit 
