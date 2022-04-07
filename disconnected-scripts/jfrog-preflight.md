@@ -23,3 +23,8 @@ Click on Generic
 
 Create ` libs-release-local` Repository Key
 ![20220315102442](https://i.imgur.com/5PeYN0d.png)
+
+# Change repository storage limit 
+`JFrog Container Registry` -> `Settings`
+Change `* File Upload In UI Max Size (MB)` to 1000 MB
+![20220316104253](https://i.imgur.com/hAbyGaO.png)

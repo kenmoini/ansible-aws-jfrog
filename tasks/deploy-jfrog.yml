@@ -217,6 +217,12 @@
     group: 1235
     mode: 0775
 
+- name: Create nginx directory
+  ansible.builtin.file:
+    path: /opt/nginx
+    state: directory
+    mode: 0775
+
 - name: Template Nginx configuration file
   template:
     src: templates/nginx.conf.j2

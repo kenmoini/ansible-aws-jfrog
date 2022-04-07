@@ -1,13 +1,13 @@
 #!/bin/bash
 # Still in development 
+# `curl -X POST -vu ${USERNAME}:${PASSWORD} https://${LOCAL_REGISTRY}/artifactory/ui/jcr/eula/accept`
 set -x
 
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json
 export LOCAL_SECRET_JSON=~/merged-pull-secret.json
-export PORT=443
 export LOCAL_REGISTRY=jfrog.example.com
-export LOCAL_REPOSITORY=artifactory/ocp4
+export LOCAL_REPOSITORY=ocp4/ocp4
 export OCP_REGISTRY=quay.io/openshift-release-dev/ocp-release
 export EMAIL="admin@changeme.com"
 export PASSWORD="CHANGEME"
@@ -41,7 +41,7 @@ podman login --authfile ~/merged-pull-secret.json \
   -u ${USERNAME} \
   -p ${PASSWORD} \
   ${LOCAL_REGISTRY} \
-  --tls-verify=${TLS_VERIFY} 
+  --tls-verify=${TLS_VERIFY} -v || exit 1
 }
 
 function ocp_mirror_release() {
@@ -54,8 +54,8 @@ function ocp_mirror_release() {
     fi 
 	oc adm -a ${LOCAL_SECRET_JSON} release mirror \
 		--from=${OCP_REGISTRY}:${OCP_RELEASE} \
-		--to=${LOCAL_REGISTRY}:${PORT}/${LOCAL_REPOSITORY} \
-		--to-release-image=${LOCAL_REGISTRY}:${PORT}/${LOCAL_REPOSITORY}:${OCP_RELEASE} --insecure=${USE_INSECURE}
+		--to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
+		--to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE} --insecure=${USE_INSECURE}
 }
 
 function download_oc_latest_client() {
@@ -111,16 +111,16 @@ function download_rhcos() {
 		sudo mkdir -p ${OCP_RELEASE_DOWN_PATH}
 		echo "--> Downloading RHCOS resources: RHCOS QEMU Image"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_QEMU_URI | xargs basename) ${RHCOS_QEMU_URI}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_QEMU_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_QEMU_URI | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_QEMU_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_QEMU_URI | xargs basename)"
 		echo "--> Downloading RHCOS resources: RHCOS Openstack Image"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_OPENSTACK_URI | xargs basename) ${RHCOS_OPENSTACK_URI}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_OPENSTACK_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_OPENSTACK_URI | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_OPENSTACK_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_OPENSTACK_URI | xargs basename)"
 		echo "--> Downloading RHCOS resources: RHCOS ISO"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ISO_URI | xargs basename) ${RHCOS_ISO_URI}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ISO_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ISO_URI | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ISO_URI | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ISO_URI | xargs basename)"
 		echo "--> Downloading RHCOS resources: RHCOS RootFS"
 		sudo curl -s -L -o ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ROOT_FS | xargs basename) ${RHCOS_ROOT_FS}
-        curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ROOT_FS | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ROOT_FS | xargs basename)"
+		curl -X PUT -u ${USERNAME}:${PASSWORD} -T  ${OCP_RELEASE_DOWN_PATH}/$(echo $RHCOS_ROOT_FS | xargs basename) "https://${LOCAL_REGISTRY}/artifactory/libs-release-local/$RHCOS_VERSION/$(echo $RHCOS_ROOT_FS | xargs basename)"
 	else
 		echo "The folder already exist, so delete it if you want to re-download the RHCOS resources"
 	fi
