@@ -1,5 +1,5 @@
 #!/bin/bash
-# Still in development 
+set -xe
 
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json
