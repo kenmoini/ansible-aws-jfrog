@@ -1,7 +1,7 @@
 #!/bin/bash
 # Still in development 
 # `curl -X POST -vu ${USERNAME}:${PASSWORD} https://${LOCAL_REGISTRY}/artifactory/ui/jcr/eula/accept`
-set -x
+set -xe
 
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json
