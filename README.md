@@ -53,3 +53,6 @@ There are some manual steps post-deployment - Artifactory Pro allows REST API ac
 - Create a Local Repository - Docker type, Repository Key of whatever you're naming the repo (like `library`, `olm-mirror`, `ocp-release-mirror`, etc), with a Docker Tag Retention of 4096.
 - Under ***Identity and Access > Users*** create a user to pull/push from the created Repositories
 
+
+## Links
+* [artifactory quick setup](https://gist.github.com/tosin2013/9d151d74b6a0ee9443b5afbd9f1e23f8)

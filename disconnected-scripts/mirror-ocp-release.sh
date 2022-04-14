@@ -1,5 +1,5 @@
 #!/bin/bash
-# Still in development 
+set -xe
 
 # Variables
 export PULL_SECRET_JSON=~/pull_secret.json
@@ -55,6 +55,20 @@ function ocp_mirror_release() {
 		--from=${OCP_REGISTRY}:${OCP_RELEASE} \
 		--to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
 		--to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE} --insecure=${USE_INSECURE}
+	oc adm -a ${LOCAL_SECRET_JSON} release mirror \
+		--from=quay.io/openshift-release-dev/ocp-release:${OCP_RELEASE} \
+		--to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY} \
+		--to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}/ocp-release:${OCP_RELEASE} --insecure=${USE_INSECURE}
+	cat >${OCP_RELEASE}-clusterimageset.yaml<<EOF
+	---
+	apiVersion: hive.openshift.io/v1
+	kind: ClusterImageSet
+	metadata:
+	  name: openshift-v$(oc version | awk '{print $3}')
+	  namespace: open-cluster-management
+	spec:
+	  releaseImage: ${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}/ocp-release:${OCP_RELEASE}
+EOF
 }
 
 function download_oc_latest_client() {

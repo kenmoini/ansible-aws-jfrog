@@ -24,7 +24,12 @@ Click on Generic
 Create ` libs-release-local` Repository Key
 ![20220315102442](https://i.imgur.com/5PeYN0d.png)
 
-# Change repository storage limit 
+## Change repository storage limit 
 `JFrog Container Registry` -> `Settings`
 Change `* File Upload In UI Max Size (MB)` to 1000 MB
 ![20220316104253](https://i.imgur.com/hAbyGaO.png)
+
+## Set Allow Anonymous Access 
+> This will allow for downloads of isos and img from the `libs-release-local`
+ navigate to Administration > Security settings, and tick the box to Allow Anonymous Access
+![20220414111110](https://i.imgur.com/Knh1MbQ.png)
